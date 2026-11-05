@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>Home Dashboard</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      background: #000;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Pretendard, Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: stretch;
+      justify-content: stretch;
+    }
+
+    .dashboard {
+      width: 100%;
+      height: 100%;
+      padding: clamp(22px, 4vw, 64px);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 28px;
+      background:
+        radial-gradient(circle at 82% 12%, rgba(255,255,255,0.045), transparent 28%),
+        #000;
+    }
+
+    .top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      font-size: clamp(14px, 1.3vw, 20px);
+      color: #888;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .date {
+      text-align: right;
+      color: #aaa;
+      font-size: clamp(16px, 1.8vw, 28px);
+      line-height: 1.5;
+    }
+
+    .center {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(330px, 38vw);
+      gap: 40px;
+      align-items: center;
+    }
+
+    .clock-wrap { min-width: 0; }
+
+    .clock {
+      font-size: clamp(92px, 16vw, 235px);
+      font-weight: 700;
+      letter-spacing: -0.07em;
+      line-height: 0.88;
+      white-space: nowrap;
+    }
+
+    .seconds {
+      color: #4a4a4a;
+      font-size: 0.28em;
+      vertical-align: top;
+      margin-left: 0.12em;
+      letter-spacing: -0.02em;
+    }
+
+    .sub {
+      margin-top: 24px;
+      color: #777;
+      font-size: clamp(17px, 1.7vw, 28px);
+    }
+
+    .right-column {
+      display: grid;
+      grid-template-rows: auto auto;
+      gap: 18px;
+    }
+
+    .card {
+      padding: 26px 28px;
+      border: 1px solid #1c1c1c;
+      border-radius: 26px;
+      background: #080808;
+    }
+
+    .label {
+      color: #666;
+      font-size: 13px;
+      letter-spacing: 0.18em;
+      margin-bottom: 18px;
+      text-transform: uppercase;
+    }
+
+    .weather-main {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .weather-temp {
+      font-size: clamp(46px, 5vw, 76px);
+      font-weight: 700;
+      letter-spacing: -0.05em;
+    }
+
+    .weather-icon {
+      font-size: clamp(42px, 4vw, 64px);
+      filter: grayscale(1);
+    }
+
+    .weather-desc {
+      margin-top: 7px;
+      font-size: clamp(18px, 1.6vw, 25px);
+      color: #bbb;
+    }
+
+    .weather-meta {
+      margin-top: 14px;
+      color: #666;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .headline {
+      min-height: 110px;
+      font-size: clamp(23px, 2.35vw, 38px);
+      font-weight: 650;
+      line-height: 1.28;
+      letter-spacing: -0.035em;
+      display: flex;
+      align-items: center;
+      transition: opacity .25s ease, transform .25s ease;
+    }
+
+    .headline.hide {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    .source {
+      margin-top: 18px;
+      color: #555;
+      font-size: 14px;
+    }
+
+    .bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #444;
+      font-size: 13px;
+    }
+
+    .fullscreen-btn {
+      appearance: none;
+      border: 1px solid #242424;
+      background: #090909;
+      color: #777;
+      border-radius: 999px;
+      padding: 10px 15px;
+      cursor: pointer;
+    }
+
+    .fullscreen-btn:hover { color: #fff; border-color: #444; }
+
+    .tap-hint {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 28px;
+      pointer-events: none;
+    }
+
+    .tap-hint span {
+      background: rgba(20,20,20,.92);
+      border: 1px solid #2b2b2b;
+      color: #999;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 900px) {
+      .center {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      .right-column {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+      }
+      .clock {
+        font-size: clamp(82px, 24vw, 180px);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .right-column {
+        grid-template-columns: 1fr;
+      }
+      .dashboard {
+        overflow-y: auto;
+      }
+      html, body {
+        overflow: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="dashboard">
+    <section class="top">
+      <div class="brand">HOME DASHBOARD</div>
+      <div class="date" id="date"></div>
+    </section>
+
+    <section class="center">
+      <div class="clock-wrap">
+        <div class="clock">
+          <span id="hm">00:00</span><span class="seconds" id="sec">00</span>
+        </div>
+        <div class="sub" id="greeting">좋은 하루 보내세요.</div>
+      </div>
+
+      <div class="right-column">
+        <aside class="card">
+          <div class="label">WEATHER</div>
+          <div class="weather-main">
+            <div>
+              <div class="weather-temp" id="weatherTemp">--°</div>
+              <div class="weather-desc" id="weatherDesc">날씨 불러오는 중...</div>
+            </div>
+            <div class="weather-icon" id="weatherIcon">☁️</div>
+          </div>
+          <div class="weather-meta" id="weatherMeta">현재 위치 확인 중</div>
+        </aside>
+
+        <aside class="card">
+          <div class="label">LATEST HEADLINES</div>
+          <div class="headline" id="headline">뉴스를 불러오는 중...</div>
+          <div class="source" id="source">Google News</div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="bottom">
+      <div id="status">날씨 · 뉴스 자동 갱신</div>
+      <button class="fullscreen-btn" id="fullscreenBtn">전체화면</button>
+    </section>
+  </main>
+
+  <div class="tap-hint" id="tapHint"><span>화면을 한 번 누르면 전체화면</span></div>
+
+  <script>
+    const hm = document.getElementById('hm');
+    const sec = document.getElementById('sec');
+    const dateEl = document.getElementById('date');
+    const greeting = document.getElementById('greeting');
+    const headlineEl = document.getElementById('headline');
+    const sourceEl = document.getElementById('source');
+    const statusEl = document.getElementById('status');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const tapHint = document.getElementById('tapHint');
+
+    const weatherTemp = document.getElementById('weatherTemp');
+    const weatherDesc = document.getElementById('weatherDesc');
+    const weatherIcon = document.getElementById('weatherIcon');
+    const weatherMeta = document.getElementById('weatherMeta');
+
+    function updateClock() {
+      const now = new Date();
+      hm.textContent = now.toLocaleTimeString('ko-KR', {
+        hour: '2-digit', minute: '2-digit', hour12: false
+      });
+      sec.textContent = String(now.getSeconds()).padStart(2, '0');
+
+      dateEl.innerHTML =
+        now.toLocaleDateString('ko-KR', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }) + '<br>' +
+        now.toLocaleDateString('ko-KR', { weekday: 'long' });
+
+      const h = now.getHours();
+      greeting.textContent =
+        h < 6 ? '늦은 밤이에요.' :
+        h < 12 ? '좋은 아침이에요.' :
+        h < 18 ? '좋은 오후예요.' :
+        '좋은 저녁이에요.';
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    function weatherInfo(code, isDay) {
+      const day = !!isDay;
+      if (code === 0) return { text: '맑음', icon: day ? '☀️' : '🌙' };
+      if ([1,2].includes(code)) return { text: '대체로 맑음', icon: '🌤️' };
+      if (code === 3) return { text: '흐림', icon: '☁️' };
+      if ([45,48].includes(code)) return { text: '안개', icon: '🌫️' };
+      if ([51,53,55,56,57].includes(code)) return { text: '이슬비', icon: '🌦️' };
+      if ([61,63,65,66,67].includes(code)) return { text: '비', icon: '🌧️' };
+      if ([71,73,75,77].includes(code)) return { text: '눈', icon: '🌨️' };
+      if ([80,81,82].includes(code)) return { text: '소나기', icon: '🌧️' };
+      if ([85,86].includes(code)) return { text: '눈 소나기', icon: '🌨️' };
+      if ([95,96,99].includes(code)) return { text: '뇌우', icon: '⛈️' };
+      return { text: '날씨 정보', icon: '☁️' };
+    }
+
+    async function reverseGeocode(lat, lon) {
+      try {
+        const url = `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&language=ko&format=json`;
+        const res = await fetch(url, {cache: 'no-store'});
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        const r = data.results && data.results[0];
+        if (!r) return '현재 위치';
+        return [r.admin1, r.name].filter(Boolean).join(' ');
+      } catch {
+        return '현재 위치';
+      }
+    }
+
+    async function loadWeather(lat, lon, fallbackName = '') {
+      try {
+        const url =
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+          `&current=temperature_2m,apparent_temperature,weather_code,is_day,relative_humidity_2m,wind_speed_10m` +
+          `&timezone=auto`;
+
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error('weather');
+        const data = await res.json();
+        const c = data.current;
+        const info = weatherInfo(c.weather_code, c.is_day);
+
+        const place = fallbackName || await reverseGeocode(lat, lon);
+        weatherTemp.textContent = `${Math.round(c.temperature_2m)}°`;
+        weatherDesc.textContent = info.text;
+        weatherIcon.textContent = info.icon;
+        weatherMeta.textContent =
+          `${place} · 체감 ${Math.round(c.apparent_temperature)}° · 습도 ${c.relative_humidity_2m}% · 바람 ${Math.round(c.wind_speed_10m)}km/h`;
+      } catch {
+        weatherDesc.textContent = '날씨 정보를 불러오지 못했어요';
+        weatherMeta.textContent = '인터넷 연결을 확인해주세요';
+      }
+    }
+
+    function initWeather() {
+      if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          pos => loadWeather(pos.coords.latitude, pos.coords.longitude),
+          () => loadWeather(37.5665, 126.9780, '서울'),
+          { enableHighAccuracy: false, timeout: 7000, maximumAge: 15 * 60 * 1000 }
+        );
+      } else {
+        loadWeather(37.5665, 126.9780, '서울');
+      }
+    }
+
+    initWeather();
+    setInterval(initWeather, 15 * 60 * 1000);
+
+    const fallback = [
+      { title: '대시보드가 준비되었습니다.', source: 'Home Dashboard' },
+      { title: '인터넷 연결 시 최신 뉴스 헤드라인을 자동으로 표시합니다.', source: 'System' },
+      { title: '전체화면 버튼을 누르거나 홈 화면에 설치해 사용하세요.', source: 'System' }
+    ];
+
+    let headlines = [...fallback];
+    let index = 0;
+
+    function showHeadline(item) {
+      headlineEl.classList.add('hide');
+      setTimeout(() => {
+        headlineEl.textContent = item.title;
+        sourceEl.textContent = item.source || 'News';
+        headlineEl.classList.remove('hide');
+      }, 240);
+    }
+
+    function nextHeadline() {
+      if (!headlines.length) return;
+      index = (index + 1) % headlines.length;
+      showHeadline(headlines[index]);
+    }
+
+    setInterval(nextHeadline, 7000);
+
+    async function loadNews() {
+      const rss = encodeURIComponent('https://news.google.com/rss?hl=ko&gl=KR&ceid=KR:ko');
+      const url = 'https://api.rss2json.com/v1/api.json?rss_url=' + rss;
+
+      try {
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+
+        if (data.items && data.items.length) {
+          headlines = data.items.slice(0, 12).map(item => {
+            let title = item.title || '';
+            let source = 'Google News';
+            const match = title.match(/ - ([^-]+)$/);
+
+            if (match) {
+              source = match[1].trim();
+              title = title.replace(/ - ([^-]+)$/, '').trim();
+            }
+
+            return { title, source };
+          });
+
+          index = 0;
+          showHeadline(headlines[0]);
+          statusEl.textContent = '날씨 · 뉴스 업데이트 완료';
+        }
+      } catch {
+        statusEl.textContent = '뉴스 연결 실패 · 날씨는 별도 갱신';
+        showHeadline(headlines[0]);
+      }
+    }
+
+    loadNews();
+    setInterval(loadNews, 15 * 60 * 1000);
+
+    async function enterFullscreen() {
+      try {
+        const el = document.documentElement;
+        if (!document.fullscreenElement && el.requestFullscreen) {
+          await el.requestFullscreen();
+        }
+      } catch (_) {}
+      tapHint.style.display = 'none';
+    }
+
+    fullscreenBtn.addEventListener('click', enterFullscreen);
+
+    const firstInteraction = () => {
+      enterFullscreen();
+      window.removeEventListener('pointerdown', firstInteraction);
+      window.removeEventListener('keydown', firstInteraction);
+    };
+
+    window.addEventListener('pointerdown', firstInteraction);
+    window.addEventListener('keydown', firstInteraction);
+
+    setTimeout(() => {
+      if (!document.fullscreenElement &&
+          !window.matchMedia('(display-mode: fullscreen)').matches) {
+        tapHint.style.display = 'flex';
+      }
+    }, 1800);
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
